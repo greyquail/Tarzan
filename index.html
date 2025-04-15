@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tarzan Jungle Escape</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #87CEEB;
+    }
+    canvas {
+      display: block;
+      background: url('https://i.ibb.co/4M4wRz5/jungle-bg.jpg') repeat-x;
+      background-size: cover;
+    }
+    #startScreen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      font-family: sans-serif;
+    }
+    #startScreen button {
+      padding: 10px 20px;
+      font-size: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="startScreen">
+    <h1>Tarzan Jungle Escape</h1>
+    <p>Run, swing, collect powerups and avoid enemies!</p>
+    <p>Controls: Left/Right to move, Up to swing/jump.</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+  <canvas id="gameCanvas" width="800" height="480"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let tarzanImg = new Image();
+    tarzanImg.src = 'https://i.ibb.co/BrTYtkZ/tarzan-sprite.png'; // placeholder
+
+    let x = 50, y = 360, vx = 0, vy = 0;
+    let gravity = 1, jumpPower = -15, onGround = true;
+    let keys = {};
+
+    document.addEventListener('keydown', e => keys[e.key] = true);
+    document.addEventListener('keyup', e => keys[e.key] = false);
+
+    function startGame() {
+      document.getElementById('startScreen').style.display = 'none';
+      requestAnimationFrame(gameLoop);
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Movement
+      if (keys['ArrowRight']) vx = 5;
+      else if (keys['ArrowLeft']) vx = -5;
+      else vx = 0;
+
+      if (keys['ArrowUp'] && onGround) {
+        vy = jumpPower;
+        onGround = false;
+      }
+
+      vy += gravity;
+      x += vx;
+      y += vy;
+
+      // Floor collision
+      if (y >= 360) {
+        y = 360;
+        vy = 0;
+        onGround = true;
+      }
+
+      // Scroll background
+      ctx.save();
+      ctx.translate(-x + 100, 0);
+
+      // Draw ground
+      ctx.fillStyle = "#5B3A29";
+      ctx.fillRect(0, 400, 2000, 80);
+
+      // Draw Tarzan
+      ctx.drawImage(tarzanImg, x, y, 50, 80);
+
+      // TODO: Draw enemies, vines, powerups
+
+      ctx.restore();
+
+      requestAnimationFrame(gameLoop);
+    }
+  </script>
+</body>
+</html>
